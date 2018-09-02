@@ -15,3 +15,5 @@ def main(host, port):
 if __name__ == '__main__':
     host, port = sys.argv[1:]
     main(host, port)
+    main(host, port)
+    

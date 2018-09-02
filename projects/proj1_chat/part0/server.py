@@ -13,7 +13,7 @@ def main(port):
         tmp = message
         while tmp:
             tmp = c.recv(1024)
-            print(tmp)
+            print('tmp : ', tmp)
             message += tmp
         print(message.decode())
         c.close()
