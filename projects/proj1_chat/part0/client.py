@@ -1,6 +1,5 @@
 import sys
 import socket
-from time import sleep
 
 
 def main(host, port):
@@ -14,6 +13,5 @@ def main(host, port):
 
 if __name__ == '__main__':
     host, port = sys.argv[1:]
-    main(host, port)
     main(host, port)
     
