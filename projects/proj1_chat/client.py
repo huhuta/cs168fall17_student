@@ -4,16 +4,22 @@ from threading import Thread
 
 
 class ChatClinet(object):
-    def __init__(self, address, port):
+    def __init__(self, name, address, port):
+        self.name = name
         self.address = address
         self.port = int(port)
         self.socket = socket.socket()
         self.socket.connect((self.address, self.port))
+        self.channel = None
 
     def send(self):
         while True:
-            msg = raw_input('[Me] ')
-            self.socket.send(msg)
+            message = raw_input('[Me] ')
+            # # TODO handle no channel error
+            # if not self.channel:
+            data = '{name}|{channel}|{body}'.format(
+                name=self.name, channel='test_channel', body=message).ljust(200)
+            self.socket.sendall(data)
 
     def receive(self):
         while True:
@@ -28,7 +34,8 @@ class ChatClinet(object):
 
 if __name__ == '__main__':
     # host, port = sys.argv[1:]
+    name = 'test1'
     address = 'localhost'
     port = 5000
-    client = ChatClinet(address, port)
+    client = ChatClinet(name, address, port)
     client.start()

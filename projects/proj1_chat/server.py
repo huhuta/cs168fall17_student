@@ -13,7 +13,7 @@ class ChatServer(object):
         self.server_socket.setblocking(False)
         self.socket_list = []
         self.socket_list.append(self.server_socket)
-        # self.message_buffer = {}
+        self.message_buffer = {}
 
     def start(self):
         while True:
@@ -24,11 +24,20 @@ class ChatServer(object):
                 if sock == self.server_socket:
                     sockfd, addr = self.server_socket.accept()
                     self.socket_list.append(sockfd)
-                    # self.message_buffer[sockfd] = []
+                    self.message_buffer[sockfd] = ''
                     print(addr)
                 else:
                     msg = sock.recv(MESSAGE_LENGTH)
-                    print(msg)
+                    self.message_buffer[sock] += msg
+                    if len(self.message_buffer[sock]) > 199:
+                        data = self.message_buffer[sock][:200]
+                        split_data = data.split('|')
+                        name, channel = split_data[:2]
+                        body = '|'.join(split_data[2:])
+                        print(name)
+                        print(channel)
+                        print(body)
+                        self.message_buffer[sock] = self.message_buffer[sock][200:]
 
 
 if __name__ == '__main__':

@@ -40,7 +40,7 @@ class ChatClientSplitMessages:
         padded_message = pad_message(message)
         # Send random number of characters in the message.
         while chars_sent < utils.MESSAGE_LENGTH:
-            time.sleep(1)
+            time.sleep(0.3)
             last_char_to_send = random.randrange(
                 chars_sent, utils.MESSAGE_LENGTH + 1)
             message_to_send = padded_message[chars_sent:last_char_to_send]
@@ -73,7 +73,6 @@ class ChatClientSplitMessages:
             "overloaded and abused.")
         for i in range(10):
             self.send_split_message(client_socket, message)
-            time.sleep(1)
 
 
 if __name__ == "__main__":

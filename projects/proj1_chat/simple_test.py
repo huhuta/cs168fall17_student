@@ -74,10 +74,11 @@ class SimpleTest():
         self.check_for_output(self.kay_client, "[Alice] Hello!")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print "Usage: python simple_test.py <port>"
-        sys.exit(1)
+    # if len(sys.argv) < 2:
+    #     print "Usage: python simple_test.py <port>"
+    #     sys.exit(1)
 
-    port = int(sys.argv[1])
+    # port = int(sys.argv[1])
+    port = 5000
     SimpleTest().run(port)
 
