@@ -1,6 +1,8 @@
-# import sys
+import sys
+# import os
 import socket
 from threading import Thread
+from utils import CLIENT_MESSAGE_PREFIX
 
 
 class ChatClinet(object):
@@ -14,28 +16,23 @@ class ChatClinet(object):
 
     def send(self):
         while True:
-            message = raw_input('[Me] ')
-            # # TODO handle no channel error
-            # if not self.channel:
+            message = raw_input(CLIENT_MESSAGE_PREFIX)
             data = '{name}|{channel}|{body}'.format(
-                name=self.name, channel='test_channel', body=message).ljust(200)
+                name=self.name, channel=self.channel, body=message).ljust(200)
+            if message.startswith('/join') or message.startswith('/create'):
+                self.channel = message.split(' ')[1]
             self.socket.sendall(data)
 
     def receive(self):
         while True:
-            msg = self.socket.recv(1024)
-            print(msg)
+            print(self.socket.recv(2048))
 
     def start(self):
-        t = Thread(target=self.send)
-        t.start()
+        Thread(target=self.send).start()
         self.receive()
 
 
 if __name__ == '__main__':
-    # host, port = sys.argv[1:]
-    name = 'test1'
-    address = 'localhost'
-    port = 5000
+    name, address, port = sys.argv[1:]
     client = ChatClinet(name, address, port)
     client.start()
