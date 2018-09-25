@@ -37,31 +37,40 @@ class ChatServer(object):
         else:
             sock.sendall(SERVER_INVALID_CONTROL_MESSAGE.format(command_type))
 
+    def _parse_data(self, sock):
+        data = self.message_buffer[sock][:200].rstrip()
+        self.message_buffer[sock] = self.message_buffer[sock][200:]
+
+        split_data = data.split('|')
+        name, channel = split_data[:2]
+        body = '|'.join(split_data[2:])
+
+        if body.startswith('/'):
+            self._control_message_process(name, body, sock)
+            return
+
+        for channel_socket in self.channels[channel]:
+            if channel_socket is not sock:
+                channel_socket.sendall('[{0}] {1}'.format(name, body))
+
+    def _process_ready_to_read_socket(self, sock):
+        if sock == self.server_socket:
+            sockfd, _ = self.server_socket.accept()
+            self.socket_list.append(sockfd)
+            self.message_buffer[sockfd] = ''
+            return
+
+        msg = sock.recv(MESSAGE_LENGTH)
+        self.message_buffer[sock] += msg
+        if len(self.message_buffer[sock]) > 199:
+            self._parse_data(sock)
+
     def start(self):
         while True:
             ready_to_read, ready_to_write, in_error = select.select(
                 self.socket_list, [], [])
             for sock in ready_to_read:
-                if sock == self.server_socket:
-                    sockfd, addr = self.server_socket.accept()
-                    self.socket_list.append(sockfd)
-                    self.message_buffer[sockfd] = ''
-                else:
-                    msg = sock.recv(MESSAGE_LENGTH)
-                    self.message_buffer[sock] += msg
-                    if len(self.message_buffer[sock]) > 199:
-                        data = self.message_buffer[sock][:200].rstrip()
-                        split_data = data.split('|')
-                        name, channel = split_data[:2]
-                        body = '|'.join(split_data[2:])
-
-                        if body.startswith('/'):
-                            self._control_message_process(name, body, sock)
-                            self.message_buffer[sock] = self.message_buffer[sock][200:]
-                        else:
-                            for channel_socket in self.channels[channel]:
-                                if channel_socket is not sock:
-                                    channel_socket.sendall('[{0}] {1}'.format(name, body))
+                self._process_ready_to_read_socket(sock)
 
 
 if __name__ == '__main__':

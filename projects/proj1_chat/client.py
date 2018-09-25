@@ -1,5 +1,4 @@
 import sys
-# import os
 import socket
 from threading import Thread
 from utils import CLIENT_MESSAGE_PREFIX
